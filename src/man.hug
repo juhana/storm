@@ -1,0 +1,141 @@
+character oldman "old man"
+{
+    noun "man", "father"
+    adjective "old"
+    article "the"
+    is hidden
+
+    before
+    {
+        object DoAsk
+        {
+            if scene = CUTTING_ANTENNA
+            {
+                "\"There's no time to waste! Go already!\""
+                return true
+            }
+            
+            select xobject
+                case lady, elizabeth
+                {
+                    if lady is mentioned
+                    {
+                        "\"I think your wife needs professional help,\" I said.\n"
+                        
+                        "\"Help? She needs Elizabeth back!\" he exclaimed.
+                        \"I'm so close... so close...\""
+                    }
+                    else
+                    {
+                        "\"Why is the woman downstairs insisting that I'm Elizabeth?
+                        Who is she anyway?\"\n"
+                        
+                        "Suddenly he looked very melancholic. \"Oh, Elizabeth...
+                        She was our daughter. She died too young, and my wife has
+                        been... ill ever since.\" He pauses to wipe his eye with a 
+                        handkerchief. \"But when we moved to this house 
+                        and when I discovered this library, there's hope! 
+                        We will soon be together again!\""
+                        
+                        lady is mentioned
+                    }
+                }
+                
+                case experiment
+                {
+                    "\"Uh... what exactly are you doing here?\" I asked carefully.
+                    There was obviously something not quite right here.\n"
+                    
+                    "\"This, my lady, is how I will bring back my dear Elizabeth!\"
+                    His eyes gleamed with crazy. \"I found these books, and the
+                    incantations...\""
+                    
+                    if curtains is open and london is not mentioned
+                    {
+                        "\nSomething was happening outside, in London."
+                    } 
+                    
+                    experiment is mentioned
+                }
+                
+                case else
+                {
+                    return false
+                }
+                
+            return true
+        }
+        
+        object DoTell
+        {
+            if scene = CUTTING_ANTENNA
+            {
+                Perform( &DoAsk, self, xobject )
+                return true
+            }
+
+            select xobject
+                case me
+                {
+                    "\"I'm here only by chance,\" I explained. \"My car got
+                    stuck in the mud..\"\n"
+
+                    "\"Yes, yes,\" he interrupted. \"As long as you don't
+                    bother my experiment, I don't really care.\""
+                }
+
+                case generator
+                {
+                    "\"I managed to turn on the generator.\"\n"
+
+                    "\"Yes, I noticed. Thank you,\" he replied."
+                }
+
+                case london
+                {
+                    "\"Look at what's happening to the city! Curse your damned experiments!\"\n"
+
+                    "He raised his head to view the scene. He looked at London
+                    in disbelief and he seemed to experience a brief moment of sanity.\n"
+
+                    "\"No... It's impossible! Did I write the wrong glyphs...
+                    or was the voltage too high? Or...\"\n"
+
+                    "\"What's happening here? What is this storm?\"\n"
+
+                    "\"I... all I wanted was to bring Elizabeth back... You
+                    mustn't judge me! Something has went terribly wrong,\" he
+                    cried.\n"
+
+                    "He rummaged through a box next to the apparatus and pulled
+                    out a small axe. \"We must end this now! Here, take this
+                    hatchet and climb to the roof. I've set up an antenna there
+                    that broadcasts the subspatial messages. I can't stop it from
+                    here, you must cut down the antenna to make this right.\"\n"
+
+                    "\"What? I don't...\" I tried to protest, but he shoved
+                    the hatchet to me. \"Go! Now!\""
+
+                    study.out_to = balcony
+                    scene = CUTTING_ANTENNA
+                    move axe to player
+                }
+
+                case storm
+                {
+                    "\"There's a huge storm outside! It... doesn't feel
+                    natural,\" I said.\n"
+                    
+                    "\"I have no time for small talk about the weather
+                    young lady,\" he replied."                 
+                }
+                
+                case else
+                {
+                    return false
+                }
+
+            return true
+        }
+    }
+}

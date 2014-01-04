@@ -1,0 +1,136 @@
+constant RELEASE_NUMBER 1
+constant RELEASE_DATE "2014-01-05"
+constant IFID "B7142FD1-4BE4-4BE8-A3BF-E854D90F3540"
+
+! Uncomment the following to include verb stub routines:
+! #set VERBSTUBS
+
+
+! LIBRARIES
+
+#include "roodylib.g"
+#include "verblib.g"
+#include "verbs.hug"
+#include "hugolib.h"
+#include "roodylib.h"
+#include "pasttense.h"
+
+
+! OTHER DEFINITIONS
+#include "misc.hug"
+
+! WORLD
+#include "outside.hug"
+#include "bedroom.hug"
+#include "upstairs.hug"
+#include "downstairs.hug"
+#include "roof.hug"
+#include "study.hug"
+#include "cellar.hug"
+#include "balcony.hug"
+
+! CHARACTERS
+#include "player.hug"
+#include "lady.hug"
+#include "man.hug"
+
+enumerate start = 1
+{
+    STORY_START, 
+    GETTING_IN,
+    CLOTHES_CHANGED,
+    POWER_OUT, 
+    CELLAR_SEARCH, 
+    POWER_ON,
+    CUTTING_ANTENNA
+}
+
+global scene = STORY_START
+
+routine full_banner
+{
+    Font(BOLD_ON | DEFAULT_FONT)
+    "Storm Over London"
+    Font(BOLD_OFF)
+    "An interactive story by Juhana Leinonen"
+    print "Release "; number RELEASE_NUMBER; " ("; RELEASE_DATE; ")"
+    print BANNER
+}
+
+routine init
+{
+    pasttense = true
+    player_person = 1
+    prompt = ">"
+    counter = -1
+    verbosity = 2
+    
+    STATUSTYPE = 0
+
+    cls
+    "I was driving home when the storm front hit me. I have never seen such 
+    rainfall. I could barely see the headlights, and only flashes of lightning 
+    gave me brief glimpses of the road ahead so I could prevent the car 
+    from swerving off the road.\n"
+    
+    "The GPS lost the signal and at some point I must have taken a wrong turn, 
+    for I was soon in an unpaved road I wasn't familiar with. The tires skid on 
+    the dirt that was quickly turning into deeper and deeper mud, and I knew 
+    stopping now would most likely mean getting hopelessly stuck.\n"
+    
+    "The road ended in the yard of a large and old house. I was trying to turn 
+    the car around when it stopped in a puddle in the middle of the driveway.\n\n"
+
+    full_banner
+    "\IType HOWTO for instructions, ABOUT for more information or CREDITS for full credits.\i"
+
+    player = me                   
+    location = yard
+    old_location = location
+
+    FindLight(location)
+    DescribePlace(location)
+    location is visited
+    CalculateHolding(player)
+
+#ifset USE_PLURAL_OBJECTS
+    InitPluralObjects
+#endif
+}
+
+#ifset PRECOMPILED_LIBRARY
+replace main
+{
+#else
+routine main
+{
+#endif
+    counter = counter + 1
+    PrintStatusLine
+    run location.each_turn
+    runevents
+    RunScripts
+    if parent(speaking)~=location
+        speaking = 0
+}
+
+
+! replacements to library actions
+
+replace DoDrop
+{
+    "I didn't want to leave anything important behind."
+}
+
+replace PreParseError
+{
+        if word[1] = "call"
+        {
+                DoCall
+                return true
+        }
+        return false
+}
+
+! scenery class
+

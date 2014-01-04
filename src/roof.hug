@@ -1,0 +1,166 @@
+room roof "Roof"
+{
+    long_desc
+    {
+        if devourer is known
+        {
+            Perform( &DoLook, devourer )
+        }
+        else
+        {
+            "I climbed past the gutter and saw what must have been the antenna,
+            a gnarled wooden staff, on top of the roof's ridge.
+            The rain was pouring down in torrents and staying on the steps
+            took all my effort.\n\n
+    
+            Clambering up to the antenna I glanced behind me and saw horrifying a
+            dark mass was emerging
+            from the storm clouds over London; it was larger than the city itself,
+            and revealed more of itself every second as it descended from the skies.
+            Even the light from lightning would not penetrate the total blackness 
+            of its form. Only its grotesque shape could be seen as a silhouette 
+            against the dark sky.\n\n
+    
+            An overwhelming sense of dread and despair overcame me. I screamed,
+            screamed until my lungs were empty of air."
+        }
+    }
+    
+    d_to
+    {
+        Perform( &DoJump )
+    }
+    
+    before
+    {
+        location
+        {
+            select verbroutine
+                case &DoJump:
+                {
+                    "There was no hope left, only desperation and emptiness
+                    awaited. I jumped down from the roof and embraced Death who
+                    would claim my soul and deliver me salvation."
+
+                    endflag = 1
+                }
+
+                case &DoPray:
+                {
+                    "I wasn't a very religious person, but if there ever was a
+                    time to pray it was now. That one prayer I used to know,
+                    how did it go?\n\n
+
+                    \I\_ Our Father who art in heaven,\n
+                    \_ hallowed be thy name.\n
+                    \_ Thy kingdom come,\n
+                    \_ thy will be done,\n
+                    \_ ph'nglui mglw'nafh Cthulhu,\n
+                    \_ R'lyeh wgah'nagl fhtagn.\n
+                    \_ Ia! Ia! Ia!\i"
+
+                    endflag = 1
+                }
+
+                case &DoSing:
+                {
+                    "A song, ancient and forgotten, entered my mind and I began
+                    to sing; I sang words I could not understand, to gods I did
+                    not recognise. I sang until nothing but the cursed words
+                    were left and the last shreds of sanity fled my mind.\n"
+
+                    "\IIa! Ia! Cthulhu fhtagn!\i"
+
+                    endflag = 1
+                }
+
+                case &DoScream:
+                {
+                    "And I did scream. I screamed my mind empty of thoughts
+                    that once were human but now claimed by the Devourer,
+                    the Destroyer, the god of Despair."
+
+                    endflag = 1
+                }
+
+            return false
+        }
+    }
+}
+
+object antenna "antenna"
+{
+    noun "antenna", "rod", "wires", "staff"
+    article "the"
+    in roof
+    is static, hidden
+
+    long_desc
+        "The antenna was made of gnarled black wood and was perhaps two meters
+        high. Some wires were attached to it and ran down through the roof,
+        presumably to the machine I saw in the study."
+
+    before
+    {
+        object DoCut, DoHit
+        {
+            "I struck the antenna with the axe once, twice, three times.
+            It broke and fell down the roof, but it was naive to think it would
+            have had any effect. Was it even the old man who had summoned the
+            Devourer into this world?\n"
+
+            "It mattered not: the damage was done, and
+            nothing could stop the inevitable.
+            I laughed at the foolishness of my efforts, I laughed when the
+            rain swept me off the roof and into the merciful hands of Death."
+
+            endflag = 1
+        }
+
+        object DoCutWith, DoHitWith
+        {
+            if xobject = axe
+            {
+                Perform( &DoCut, self )
+            }
+            else
+            {
+                "The axe was the only thing I had that could cut the antenna."
+                return true
+            }
+
+        }
+    }
+}
+
+object devourer "creature"
+{
+    noun "god", "creature", "monster", "beast", "mass",
+    adjective "dark", "monstrous", "horrifying"
+    article "the"
+    in roof
+    is static, hidden
+
+    long_desc
+    {
+        "I gazed upon the beast and visions of cities long dead filled
+        my mind. Strange imagery surrounded me and terrifying creatures
+        passed by unaware of my presence.\n"
+
+        "The vision faded away and was replaced by the monstrous being,
+        revealing its horrifying face. As it devoured London, it devoured
+        my sanity, and for a fleeting moment I wished for death before
+        dementia claimed its victim."
+
+        endflag = 1
+    }
+
+    before
+    {
+        object DoPrayTo
+        {
+            Perform( &DoPray )
+            return true
+        }
+    }
+}

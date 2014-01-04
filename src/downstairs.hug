@@ -1,0 +1,147 @@
+room livingroom "Living Room"
+{
+    long_desc
+        "The house looked like something out of a Jane Austen book.
+        The furniture was antique, or at least very skillfully made replicas.
+        The air was heavy and smelled of dust. It must had been a while since
+        the room had been properly cleaned."
+        
+    out_to 
+        "There was no way I would go outside again before I had means to return home."
+        
+    u_to 
+    {
+        if clothes is worn and scene < POWER_ON     ! the scene requirement is for debugging
+        {
+            "I walked up the creaking stairs."
+
+            MovePlayer( upstairs1 )
+        }
+        else {
+            MovePlayer( upstairs2 )
+        }
+        
+        return true
+    } 
+    
+    d_to
+    {
+        ! this seems to be required, otherwise changing it later isn't possible
+        Perform( &DoGo, n_obj )
+    }
+    
+    cant_go 
+        "Exploring the house would have been rude and unnecessary. I only 
+        needed to go up the stairs."
+
+            
+    after
+    {
+        location
+        {
+            if lady not in livingroom
+            {
+                "\nThe old woman sat down on one of the chairs. \"Oh dear, you're 
+                quite wet,\" she said. \"I wonder if...\"\n\n    
+            
+                She looked conflicted for a while. \"Yes, Elizabeth's clothes should 
+                fit you. Perhaps you could go upstairs and change into something 
+                dry. It's the second door to the left.\""
+                
+                move lady to livingroom
+                elizabeth is known
+                AssignPronoun( lady )
+            }
+            
+            if dress is worn and scene = CLOTHES_CHANGED
+            {
+                "\nWhen I walked down the stairs it seemed like the old woman's 
+                gaze was glassy and she was looking through me.\n\n
+                
+                \"Oh there you are, Elizabeth. Your father and I have missed you.\"\n"
+                
+                "Before I had time to say anything over my surprise, the lights
+                went out. The woman walked carefully by the mantel, picked up
+                a box of matches and started to light candles around the room.
+                She passed one of the candles to me.\n"
+                
+                "\"Could you be a dear and go see your father upstairs, Elizabeth?
+                He always knew what to do in situations like this. 
+                He should be in the study. The door is right across the stairs,
+                you remember that.\"\n"
+
+                "(I could have asked her about Elizabeth, father,
+                using the telephone, or electricity; or told her about myself.)"
+                
+                oldman is known
+                generator is known
+                scene = POWER_OUT
+                move candle to player
+            }
+            
+            if scene = CELLAR_SEARCH and cellar is not known
+            {
+                "\n\"So, what did your father say?\" the old woman said.\n"
+                
+                "\"He said to turn on the generator. And he's not my father,
+                lady. Where's the cellar?\"\n"
+                
+                "She glanced at a door next to the staircase, which must lead
+                down to the cellar. 
+                \"You were always warned not to go to the cellar, weren't you,
+                Elizabeth? Remember, when you were young?\"" 
+                
+                cellar is known
+            }
+            
+            if scene = POWER_ON and candle in player
+            {
+                "\nThe lights were on in the living room, so I put the candle
+                down on a table."
+                
+                remove candle
+            }
+        }
+    }
+}
+
+object phone "telephone"
+{
+    article "a"
+    noun "phone", "telephone"
+    adjective "landline"
+    is static
+    in livingroom
+    
+    long_desc 
+        "Although the dark red colour of the landline phone matched the decor
+        it still looked out of place here."
+    
+    short_desc 
+        "There was a phone on a side table."
+}
+
+object candle "candle"
+{
+    article "a"
+    noun "candle", "light"
+    adjective "lit"
+
+    long_desc
+        "A long candle was set in a bronze holder."
+}
+
+unimportant livingroom_furniture "furniture"
+{
+    noun "chair", "table", "furniture"
+    adjective "side"
+    article "the"
+    in livingroom
+}
+
+unimportant candles "candles"
+{
+    noun "candles"
+    in livingroom
+    is plural
+}

@@ -1,0 +1,237 @@
+constant MANSION_DESC "The mansion was old, built perhaps in the 19th century. \
+It seemed to be relatively well-kept, not counting a few missing roof tiles, \
+rusty rain gutters about to fall apart and the need for a new layer of paint."
+
+room yard "Mansion Courtyard"
+{
+    long_desc
+    {
+        print MANSION_DESC
+        "\nThe GPS was still offline and the car was stuck in the muddy driveway."
+        "\nThe front entrance was near, right outside the car."
+    }
+
+    before
+    {
+        location DoGo, DoExit
+        {
+            if object = out_obj or verbroutine = &DoExit 
+            {              
+                "I got out of the car and ran to the porch. The spurt couldn't \
+                have taken more than five seconds but I was already soaking wet \
+                from the pouring rain and my shoes dirty with mud."
+                
+                MovePlayer( porch )
+                move car to porch
+                clothes is wet
+                clothes.name = "wet clothes"
+                car is not open
+            }
+            elseif object = in_obj {
+                Perform( &DoEnter, car )
+            }
+            else
+            {
+                 "There was no point in wandering into the darkness on 
+                 foot in that weather. The options were to either try to get 
+                 inside the house or sleep in the car, and I wanted the avoid 
+                 the latter unless there were no other choices."
+            }
+            return true
+        }
+    }
+}
+
+room porch "Front Porch"
+{
+    long_desc
+        "The porch had a fairly large cover but it wasn't large enough to keep 
+        the rainfall out. The rain was still slashing against me and several 
+        times gusts of wind almost knocked me over.\n\nThe front door was closed
+        and I couldn't see a doorbell."
+    cant_go
+        "I had to try to get inside. I didn't have a set of spare clothes with 
+        me and a night in soaking wet clothes in a car would have been miserable."
+
+    in_to
+    {
+        if frontdoor is open
+        {
+            "Even though the situation was dire I wasn't about to just march in without invitation."
+        }
+        else 
+        {
+            Perform( &DoOpen, frontdoor )
+            return true
+        }
+    }
+        
+    before
+    {
+        ! redirect >KNOCK to >KNOCK ON DOOR
+        location DoVagueKnock
+        {
+            Perform( &DoKnock, frontdoor )
+            return true
+        }
+    }
+}
+
+object car "car"
+{
+    nouns "car"
+    article "the"
+    in yard
+    is container, enterable, openable, not open, transparent, static
+
+    long_desc
+        "The car was hopelessly stuck. I needed a tow truck."
+
+    short_desc
+        "The car stood in the courtyard, stuck in the mud."
+
+    before
+    {
+        object DoOpen, DoEnter
+        {
+            if location = porch
+            {
+                "There was no point in going back to the car."
+            }
+        }
+    }
+}
+
+object gps "GPS unit"
+{
+    nouns "gps", "system", "unit"
+    article "the"
+    in car
+    is static, hidden
+
+    long_desc
+        "The GPS unit said it didn't have a connection to any satellites."
+
+    before
+    {
+        object DoGet
+        {
+            "I didn't have any use for the GPS outside the car, and it wasn't even working."
+        }
+    }
+}
+
+object frontdoor "front door"
+{
+    nouns "door"
+    adjectives "front"
+    article "the"
+    in porch
+    is static, hidden, openable, not open
+
+    long_desc
+        "The massive door sat heavily in its frame. Although the door itself
+        was skillfully shaped and treated, the wood was warped and twisted,
+        full of knots and cracks."
+
+    before
+    {
+        object DoEnter
+        {
+            Perform( &DoGo, in_obj )
+
+            return true
+        }
+
+        object DoOpen
+        {
+            if self is not open
+            {
+                "The door was locked, and it would have been more courteous to knock anyway."
+                return true
+            }
+            
+            return false
+        }
+
+        object DoClose
+        {
+            if self is open
+            {
+                "I didn't want to close the door now that it was open."
+                return true
+            }
+
+            return false
+        }
+
+        object DoKnock
+        {
+            if self is open
+            {
+                "The door was already open, there was no need to knock."
+            }
+            else 
+            {
+                "At first there was no answer. I knocked again, and after a
+                while a small older woman opened the door.\n"
+
+                "\"Yes, dear?\"\n"
+
+                "(I could have asked her about the mansion, herself, or using a phone;
+                or told her about myself, the car or the storm.)"
+               
+                self is open
+                move porchlady to porch
+                usingPhone is known
+                AssignPronoun( porchlady )
+            }
+
+            return true
+        }
+    }
+} 
+
+object storm "storm"
+{
+    nouns "storm", "rain", "wind"
+    article "the"
+    found_in yard, porch
+    is known, static, hidden
+}
+
+object mansion "mansion"
+{
+    nouns "mansion", "house"
+    adjectives "old"
+    article "the"
+    found_in yard, porch
+    
+    before
+    {
+    	object DoEnter
+    	{
+    		if player in car 
+    		{
+    			Perform( &DoExit, car )
+			}
+			else 
+			{
+				Perform( &DoGo, in_obj )
+			}
+    		return true
+    	}
+	}
+
+    long_desc 
+    {
+        print MANSION_DESC
+    }
+}
+
+unimportant mansion_exterior "mansion exterior"
+{
+    nouns "roof", "tiles", "gutters", "driveway", "mud"
+    adjectives "muddy"
+    in yard
+}

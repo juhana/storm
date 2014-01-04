@@ -1,0 +1,65 @@
+! endgame message
+
+replace PrintEndGame( end_type )
+{
+	Font( BOLD_ON )
+    "\n\n\_  *** THE END ***"
+	Font( BOLD_OFF )
+}
+
+! minor library message bug fix by Jonathan Blask
+replace DoOpen
+{
+        local tempformat
+ 
+        if not CheckReach(object):  return false
+ 
+        if object is not openable
+        {
+                VMessage(&DoOpen, 1)             ! "You can't open that."
+                return
+        }
+        elseif object is open
+                VMessage(&DoOpen, 2)             ! "It's already open."
+        elseif object is locked
+                VMessage(&DoOpen, 3)             ! "It's locked."
+        else
+        {
+                object is open
+                object is moved
+                if not object.after
+                {
+                        VMessage(&DoOpen, 4)     ! "Opened."
+ 
+                        FindLight(location)     ! in case the light source
+                                                ! has been revealed
+                        if children(object) and object is not quiet and
+                        not (children(object) = 1 and child(object) = player)
+                        {
+                                print ""
+                                tempformat = FORMAT
+                                FORMAT = FORMAT | NOINDENT_F
+                                list_nest = 0
+                                WhatsIn(object)
+                                FORMAT = tempformat
+                        }
+                }
+        }
+        return true
+}
+
+
+class unimportant "scenery"
+{
+    is static, hidden
+    
+    before
+    {
+        object
+        {
+            print MatchPlural( self, "It wasn't", "They weren't" ); " important."
+
+            return true
+        }
+    }
+}

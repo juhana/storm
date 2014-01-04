@@ -1,0 +1,211 @@
+room study "Study"
+{
+    out_to upstairs2
+    cant_go 
+    {
+        if self.out_to = balcony
+        {
+            "I could only go out to the balcony."
+        }
+        else 
+        {
+            "I could only go out back to the hallway."
+        }
+    }
+    
+    long_desc
+        "Bookshelves lined the walls, full of books that had titles in languages
+        I didn't recognize. Behind a mahogany writing desk, filled with books,
+        papers and parchments, sat an old man, frevently writing on a notepad
+        or looking up something from the books."
+
+    after
+    {
+        location
+        {
+            if not oldman in study
+            {
+                "The old man was sitting behind the desk, scribbling on a notepad.\n"
+
+                "\"It's you,\" he said as he noticed me. \"Now who did you say you were
+                again? You must excuse me, I'm very busy with the experiment.'\"\n"
+
+                "(I could ask him about the woman, Elizabeth, or the experiment; 
+                or tell him about the generator, myself, or the storm.)"
+
+                move oldman to study
+                AssignPronoun( oldman )
+                return false
+            }
+        }
+    }
+}
+
+unimportant writingDesk "desk"
+{
+    noun "desk", "book", "books", "paper", "papers", "parchment", "parchments", "notepad"
+    adjective "writing"
+    in study
+}
+
+unimportant shelves "bookshelves"
+{
+    noun "bookshelf", "bookshelves"
+    in study
+    is plural
+}
+
+object experiment "contraption"
+{
+    noun "experiment", "machine", "apparatus", "contraption", "pipe", "pipes", "wire", "wires", "meter", "meters"
+    adjective "strange", "wood", "iron", "leather", "brass"
+    article "the"
+    is static
+    in study
+    
+    long_desc
+        "The machine was a jumbled mess of wood, iron, leather and brass.
+        Pipes and wires were strewn across the contraption, connected to
+        meters that didn't say anything meaningful."
+
+    short_desc
+        "A curious machine was embedded in one of the walls."
+        
+    before
+    {
+        object DoSwitchOn, DoSwitchOff
+        {
+            "I couldn't make heads or tails of the thing. There were no
+            obvious ways to turn it on or off."
+            
+            return true
+        } 
+    }
+}
+
+object axe "axe"
+{
+    noun "axe", "ax", "hatchet"
+    article "the"
+    
+    long_desc
+        "The axe was small and slightly rusty, with ornate carvings in the blade."
+}
+
+object curtains "heavy curtains"
+{
+    noun "curtain", "curtains"
+    adjective "heavy", "satin"
+    article "the"
+    is openable, not open, plural, static
+    in study
+
+    long_desc
+        "The curtains were heavy and thick, blocking all light."
+
+    short_desc
+    {
+        if self is open
+        {
+            "A view of London is visible through the balcony door."
+        }
+        else
+        {
+            "Heavy curtains covered the windows."
+        }
+
+        return true
+    }
+
+    after
+    {
+        object DoOpen
+        {
+            "I opened the heavy satin curtains and saw that they were
+            covering not a window but glass doors to a balcony.
+            Behind the doors was a view that on any
+            other day would have been a magnificent sight.
+            Only now I realised that the house was on a high hill that 
+            overlooked London which, at the moment, was in the midst of 
+            what seemed like a hurricane. \n" 
+
+            move london to study
+            move balconyDoors to study
+
+            if experiment is mentioned
+            {
+                "Entire city blocks were on fire.
+                There were no lights on in the city, only lightning and the fires
+                revealed the horrifying scene.\n"
+    
+                "The clouds above the city were moving in disturbing patterns.
+                Something was out there, about to emerge form the darkness.\n"
+    
+                "(I could tell the old man about London.)"
+    
+                london is known
+            }
+            else
+            {
+                Perform( &DoLook, london )
+            }
+
+            return true
+        }
+    }
+
+    before
+    {
+        object DoClose
+        {
+            if self is open
+            {
+                "Part of me wanted to close the curtains from the horrifying sight,
+                but I didn't want to shut my eyes from the truth."
+
+                return true
+            }
+
+            return false
+        }
+    }
+}
+
+object london "London"
+{
+    noun "london", "hurricane", "city", "storm", "clouds", "outside"
+    is static, hidden
+
+    long_desc
+    {
+        "The storm was shaking the city with horrible force,
+        far stronger than what I've ever seen. There were no electrical
+        lights to be seen anywhere, only tiny spots of light that I
+        assume were car headlights."
+
+        if experiment is mentioned
+        {
+            "\nThe clouds above the city were moving in disturbing patterns.
+            Something was out there, about to emerge form the darkness.\n"
+
+            if location = study
+            {
+                "(I could tell the old man about London.)"
+            }
+        }
+    }
+}
+
+object balconyDoors "balcony doors"
+{
+    noun "door", "doors"
+    is static, hidden
+    parse_rank 2
+
+    door_to out_obj
+
+    long_desc
+    {
+        Perform( &DoLook, london )
+    }
+}

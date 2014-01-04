@@ -1,0 +1,9 @@
+{
+  "name": "storm-over-london",
+  "version": "1.0.0",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-exec": "~0.4.2",
+    "grunt-rsync": "~0.2.1"
+  }
+}

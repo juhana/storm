@@ -1,0 +1,65 @@
+room cellar "Cellar"
+{
+    long_desc
+        "The cellar had apparently been used as a wine cellar. The shelves
+        were empty now. Water was trickling down to the floor but there didn't
+        seem to be immediate danger of flooding."
+        
+    u_to livingroom
+    out_to livingroom
+}
+
+object generator "generator"
+{
+    noun "generator"
+    adjective "power", "electricity", "diesel"
+    article "the"
+    in cellar
+    is switchable, static
+    
+    short_desc
+        "Otherwise the space was dominated by a large diesel generator."
+    
+    long_desc
+        "It looked similar to what my grandparents had in their farm,
+        except this was much bigger. It was probably large enough to provide
+        electricity to the whole mansion, and to the neighbouring houses
+        as well."
+    
+    after
+    {
+        object DoSwitchOn
+        {
+            "I turned the generator on. After some coughing and wheezing its
+            engine started running and lights flickered on in the cellar." 
+            
+            scene = POWER_ON
+            upstairs2.in_to = study
+                        
+            return true
+        }
+    }
+    
+    before
+    {
+        object DoSwitchOff
+        {
+            "I wanted the power on, not off."
+            
+            return true 
+        }
+    }
+}
+
+unimportant wineshelves "shelves"
+{
+    noun "shelf", "shelves"
+    adjective "wine"
+    in cellar
+}
+
+unimportant waterOnFloor "water"
+{
+    noun "water", "floor"
+    in cellar
+}

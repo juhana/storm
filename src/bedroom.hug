@@ -1,0 +1,164 @@
+room bedroom "Bedroom"
+{
+    long_desc
+        "The room seemed to belong to a teenaged girl, although it was very
+        ascetic. There was a simple bed, a dressing table, and a bookshelf
+        with assorted novels."
+        
+    cant_go 
+        "The only direction to go is out."
+        
+    out_to
+    {
+        if dress is not worn and clothes is not worn
+        {
+            "I was certainly not about to wander around the mansion in my underwear."
+             
+            return true 
+        }
+        
+        MovePlayer( upstairs1 )
+        return true
+    }
+}
+
+object wardrobe "wardrobe"
+{
+    article "a"
+    nouns "wardrobe", "closet"
+    is container, openable, not open, static, enterable
+    in bedroom
+    
+    short_desc
+        "A massive wardrobe was standing on the wall opposite the window."
+    
+    long_desc
+        "The wardrobe looked massively heavy. It was made of thick, dark wood."
+    
+    contains_desc
+        "Hanging inside the wardrobe was a row of";
+        
+    before
+    {
+        object DoSearch
+        {
+            Perform( &DoWear, dresses )
+        }
+        
+        object DoEnter
+        {
+            "This was not the time for hide and seek."
+            
+            return true
+        }
+    }
+}
+
+object dresses "dresses"
+{
+    noun "dresses"
+    adjective "dress", "row"
+    is plural, static
+    in wardrobe
+    
+    long_desc
+        "It was almost as if no-one had opened the wardrobe in several decades.
+        The dresses were all old-fashioned and conservative with subdued colors.
+        They were dusty but otherwise clean."
+        
+    before
+    {
+        object DoWear, DoGet, DoLookThrough
+        {
+            if dress is worn
+            {
+                "I took another look through the wardrobe, but didn't find
+                anything better than the one I had already picked."
+            }
+            elseif clothes is worn
+            {
+                "I needed to take off the wet clothes first."
+            }
+            else
+            {
+                "I looked through the dresses in the wardrobe and picked a
+                plain brown one that was the least obviously old-fashioned.
+                I tried to brush most of the dust away and then put it on.
+                I didn't feel comfortable wearing other people's socks so
+                I decided to go barefoot.\n"
+                
+                "The dress fit me quite well, although it was perhaps a bit too big.  
+                I tried to force myself not to feel self-conscious and rather
+                be happy to have something dry to wear."
+            
+                move dress to player
+                dress is worn
+                scene = CLOTHES_CHANGED
+            }
+            
+            return true  
+        }
+    }
+}
+
+object dress "dress"
+{
+    article "a"
+    noun "clothes", "dress"
+    adjective "dry", "old-fashioned", "old", "fashioned", "brown", "plain"
+    is clothing
+    
+    long_desc
+        "The brown dress was old-fashioned, ankle-length and light brown.
+        Not my usual choice but this time I didn't have much choice in the matter."
+        
+    before
+    {
+        object DoTakeOff
+        {
+            "The dress wasn't quite my style, but I didn't have any options either."
+        }
+    }
+}
+
+object bedroom_window "window"
+{
+    article "the"
+    noun "window"
+    in bedroom
+    is hidden, static, openable
+    
+    long_desc
+        "The storm raged on outside the house. I was glad to be indoors."
+    
+    before
+    {
+        object DoOpen
+        {
+            "Opening the window would only have let the rain and the cold in."
+              
+            return true
+        }
+        
+        object DoClose
+        {
+            "It was already closed."
+            
+            return true
+        }
+
+        object DoLookThrough
+        {
+            Perform( &DoLook, self )
+
+            return true
+        }
+    }
+}
+
+unimportant bedroom_furniture "furniture"
+{
+    noun "table", "bed", "bookshelf", "book", "books", "novel", "novels"
+    adjective "dressing"
+    in bedroom
+}

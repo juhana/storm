@@ -1,0 +1,215 @@
+verb "call"
+    *           DoVague
+    * anything  DoCall
+
+verb "climb"
+    *           DoVague
+    * object    DoClimb
+
+verb "cut", "slice"
+    *                               DoVague
+    * object "with"/"using" object  DoCutWith
+    * object                        DoCut
+
+verb "hit", "attack"
+    * object "with"/"using" object  DoHitWith
+
+verb "jump"
+    *           DoJump
+    * "down"    DoJump
+
+verb "knock"
+    *                   DoVagueKnock
+    * "on"/"at" object  DoKnock
+    * object            DoKnock
+
+verb "pray"
+    *               DoPray
+    * "to" object   DoPrayTo
+
+verb "scream", "yell", "shout"
+    *   DoScream
+
+verb "sing"
+    *   DoSing
+    
+verb "undress"
+    *   DoUndress
+
+
+! META VERBS
+
+verb "about"
+    *   DoAbout
+
+verb "credits"
+    *   DoCredits
+
+verb "howto"
+    *   DoHowto
+
+verb "version"
+    *   DoVersion
+    
+
+routine DoCall
+{
+    if location = livingroom
+    {
+        "The landline was dead. Not even a dial tone."
+    }
+    else
+    {
+        Perform( &DoLook, cellphone )
+    } 
+}
+
+routine DoClimb
+{
+    print MatchPlural( object, "That wasn't", "Those weren't" ); " something I could climb."
+}
+
+routine DoCut
+{
+    print MatchPlural( object, "It", "They" ); " didn't need to be cut."
+}
+
+routine DoCutWith
+{
+    Perform( &DoCut, object )
+}
+
+routine DoHitWith
+{
+    Perform( &DoHit, object )
+}
+
+routine DoJump
+{
+    "I would jump from joy when I would get home, but not a second earlier."
+}
+
+routine DoKnock
+{
+    print "Knocking on"; MatchPlural(object, "that", "those"); " would have seemed weird at that moment."
+}
+
+! this is just a named DoVague so it's easier to catch when needed
+routine DoVagueKnock
+{
+    Perform( &DoVague )
+}
+
+routine DoPray
+{
+    "I wasn't a very religious person, and the situation wasn't quite that dire yet."
+}
+
+routine DoPrayTo
+{
+    if object is living
+    {
+        "I wasn't about to start worshipping these people."
+    }
+    else
+    {
+        "I wasn't about to start worshipping random inanimate objects."
+    }
+}
+
+routine DoScream
+{
+    "It was a desperate situation, but I managed to keep my emotions in check."
+}
+
+routine DoSing
+{
+    "This was hardly the time or the place."
+}
+
+routine DoUndress
+{
+    if clothes is worn
+    {
+        Perform( &DoTakeOff, clothes )
+    }
+    elseif dress is worn
+    {
+        Perform( &DoTakeOff, dress )
+    }
+    else
+    {
+        "I wasn't wearing anything."
+    }
+}
+
+
+routine DoAbout
+{
+    "This story was made for the 7th annual New Year's Minicomp and as an
+    excercise to learn Hugo. The first release was on January 5th, 2014.
+    The latest version can be found at http://nitku.net/if/storm
+    and the source code is at https://github.com/juhana/storm.\n\n
+
+    Type VERSION for bibliographical information.\n\n"
+
+    "Copyright (c) 2014 Juhana Leinonen <juhana@nitku.net>\n"
+
+    "Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the \"Software\"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:\n"
+
+    "The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.\n"
+
+    "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE."
+}
+
+routine DoCredits
+{
+    "\IStorm Over London\i was written by Juhana Leinonen, using the Hugo
+    development system by Kent Tessman.\n\n
+
+    Many thanks to Jonathan Blask for the Roodylib and PastTense libraries
+    and for helping with programming issues."
+}
+
+routine DoHowto
+{
+    "In this story you must type commands to the narrator who will then
+    describe what she sees and does. The story advances based on your actions.\n"
+
+    "The commands are generally in the form of VERB NOUN, for example OPEN DOOR,
+    WEAR CLOTHES or TURN ON CELL PHONE. You can type INVENTORY (or just I) to check
+    what you're carrying and wearing, and EXAMINE (or X) something to take a closer
+    look at the objects and people in the story world. \n"
+
+    "You can move around by going IN, OUT, UP or DOWN. When you enter new
+    locations their descriptions will tell you which directions are available
+    from there. Compass directions are not needed. Type
+    LOOK (or just L) to see the location's description again.\n"
+
+    "To interact with other characters you can ASK or TELL them ABOUT something
+    (ASK WOMAN ABOUT MANSION). The story will tell you what conversation topics are available.\n"
+
+    "To get started you can try these commands:\n
+ - INVENTORY  (to see what you're carrying)\n
+ - EXAMINE CELL PHONE\n
+ - EXIT CAR\n
+ - KNOCK ON DOOR\n"
+}
+
+routine DoVersion
+{
+    full_banner
+    print "IFID "; IFID
+}

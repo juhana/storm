@@ -1,0 +1,144 @@
+player_character me "I"
+{
+    long_desc
+    {
+        if player in car
+        {
+            "I was not very happy about the situation, to put it mildly."
+        }
+        elseif clothes is wet and clothes is worn
+        {
+            "Frankly, I was wet and miserable more than anything else."
+        }
+        elseif player in roof {
+            "I looked into myself, and found no hope--there was only death,
+            despair and desolation. Before soon, there wouldn't be anything
+            left other than the Devourer, the world destroyer."
+
+            endflag = 1
+        }
+        else
+        {
+            "Having dry clothes on helped a little, but not much."
+        }
+    }
+
+    in car
+
+    before
+    {
+        object DoPrayTo
+        {
+            "I wasn't that narcissistic."
+            return true
+        }
+
+        object DoCut
+        {
+            if location = roof
+            {
+                "I wedged the axe between the rungs and hit my wrists to the
+                blade. The blood was for to the Devourer, and when the world
+                faded away my only hope was that it would accept my sacrifice."
+
+                endflag = 1
+            }
+        }
+
+        object DoCutWith
+        {
+            if location = roof and xobject = axe
+            {
+                Perform( &DoCut, self )
+            }
+        }
+    }
+}
+
+attribute wet 
+
+object clothes "business clothes"
+{
+    noun "clothes", "clothing"
+    adjective "my", "business", "wet"
+    article "the"
+    is plural, clothing, worn
+    in me
+
+    long_desc 
+    {
+        if self is wet
+        {
+            "My clothes were soaking wet, water dripping on the floor in small streams."
+        }
+        else 
+        {
+            "I was wearing straight pants and a short jacket."
+        }
+    }
+    
+    before
+    {
+        object DoTakeOff
+        {
+            if self is not worn
+            {
+                "I wasn't wearing the wet clothes anymore." 
+            }
+            elseif player not in bedroom
+            {
+                "I wasn't about to undress there!"
+            }
+            else
+            {
+                "I got out of my soaked clothes. The wet fabric kept clinging
+                to my skin and left me shivering."
+                
+                move clothes to bedroom
+                clothes is not worn
+            }
+        }
+        
+        object DoWear
+        {
+            if self is worn
+            {
+                return false
+            }
+
+            "I didn't want to put the wet clothes on again."
+            return true
+        }
+        
+        object DoGet
+        {
+            if self is worn
+            {
+                return false
+            }
+            
+            "I didn't want to carry the wet clothes around."
+            return true
+        }
+    }
+}
+
+object cellphone "cell phone"
+{
+    noun "phone", "cellphone"
+    adjective "cell", "mobile"
+    article "a"
+    in me
+
+    long_desc
+        "There was no reception."
+
+    before
+    {
+        object DoDrop
+        {
+            print "I didn't want to leave my cell phone behind."
+            return true
+        }
+    }
+}

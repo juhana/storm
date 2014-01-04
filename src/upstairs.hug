@@ -1,0 +1,89 @@
+room upstairs1 "Upstairs Hallway"
+{
+    long_desc
+        "The hallway was decorated with yellowing wallpaper and a carpet that
+        had already seen its best days. I could have went in to the bedroom as the
+        old lady had instructed or back down to the living room."
+    
+    cant_go
+        "I could only go in to Elizabeth's room or down back to the livingroom."
+        
+    in_to bedroom
+    d_to livingroom
+}
+
+room upstairs2 "Upstairs Hallway"
+{
+    long_desc
+        "I was back upstairs, and the door leading inside the study was right in
+        front of me."
+        
+    cant_go
+        "I could only go in to the study or down back to the livingroom."
+        
+    in_to 
+        "The door was locked."
+    
+    d_to livingroom
+
+    before
+    {
+        ! redirect >KNOCK to >KNOCK ON DOOR
+        location DoVagueKnock
+        {
+            Perform( &DoKnock, doorToStudy )
+            return true
+        }
+    }
+}
+
+unimportant hallwayScenery "scenery"
+{
+    noun "wallpaper", "carpet"
+    adjective "yellowing"
+    found_in upstairs1, upstairs2
+}
+
+object doorToStudy "study door"
+{
+    noun "door"
+    adjective "study"
+    in upstairs2
+    is hidden, static, openable, not open
+    
+    before
+    {
+        object DoKnock
+        {
+            if scene = CELLAR_SEARCH
+            {
+                "I knocked again, but there was no answer."
+            }
+            elseif scene >= POWER_ON
+            {
+                "There was no answer, but when I tried the door it wasn't locked."
+                MovePlayer( study )
+            }
+            else
+            {
+                "I knocked on the door, and almost immediately an old man opened it.
+                He was grey as ashes, just like the woman, but while she was
+                lethargic, he was jitterish and full of energy.\n"
+                
+                "\"Yes, what is it? Who are you? It doesn't matter, the power's
+                out again and I'm at a very delicate phase right now. Be a sport
+                and go downstairs to the cellar and turn on the diesel generator.\"\n"
+                
+                "Before I had time to say anything he slammed the door shut."
+                
+                livingroom.d_to = cellar
+                scene = CELLAR_SEARCH
+            }
+        }
+
+        object DoOpen, DoEnter
+        {
+            Perform( &DoGo, in_obj )
+        }
+    }
+}

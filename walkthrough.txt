@@ -1,0 +1,46 @@
+Exit the car and knock on the door. Tell the woman about the storm,
+then ask to use the phone. Go inside when she lets you.
+
+EXIT CAR
+KNOCK ON DOOR
+TELL WOMAN ABOUT STORM
+ASK WOMAN ABOUT PHONE
+IN
+
+Go upstairs and change clothes, then return downstairs.
+
+UP
+IN
+OPEN WARDROBE
+UNDRESS
+GET DRESS
+OUT
+DOWN
+
+The lights go out. Go upstairs and knock on the door.
+
+UP
+KNOCK
+
+The man tells you to turn on the generator. Go down to the cellar and do so,
+then return to the study.
+
+DOWN
+DOWN
+TURN GENERATOR ON
+UP
+UP
+IN
+
+Ask the man about his experiment. Open the curtains, then tell him about what you see.
+
+ASK MAN ABOUT EXPERIMENT
+OPEN CURTAINS
+TELL MAN ABOUT LONDON
+
+He tells you to cut down the antenna. Enter the balcony and climb to the roof.
+
+OUT
+UP
+
+Now you can either CUT THE ANTENNA or try some other action.

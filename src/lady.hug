@@ -1,0 +1,258 @@
+attribute mentioned
+
+routine let_in
+{
+    "She looked at me from head to toe and seemed to sharpen up. 
+    \"Yes, I suppose we can't leave you there in the rain. 
+    Please do come in.\"\n\nShe took a step back inside the
+    mansion and held the door open for me."
+
+    porch.in_to = livingroom
+    scene = GETTING_IN
+}
+
+female_character porchlady "old woman"
+{
+    nouns "woman", "lady"
+    adjectives "old", "older"
+    article "the"
+    long_desc 
+        "The woman was small and frail, and her thin face was grey as dust.
+        She was wearing an old-fashioned grey dress that the aristocracy would
+        have worn a hundred years ago."
+    
+    after
+    {
+        object DoAsk
+        {
+            ! The door is open --- conversation on the porch has ended
+            if scene = GETTING_IN
+            {
+                "I just wanted to go inside out of the rain before talking 
+                about anything else with the woman."
+                return true
+            }
+
+            ! Asking about the cell phone
+            if xobject = usingPhone or xobject = cellphone
+            {
+                if storm is mentioned
+                {
+                    "\"If you have a landline, I'd like to borrow your phone 
+                    to call a tow truck or a taxi so I could get home. My cell 
+                    phone has no reception here.\"\n"
+                    
+                    print LET_IN
+                    
+                    porch.in_to = livingroom
+                }
+                elseif usingPhone is mentioned
+                {
+                    "\"I would really like to make a call and get home as soon as possible.\"\n\n
+                    \"Yes...\" she said with a vacant look in her eyes."
+                }
+                else
+                {
+                    "\"I'm sorry to bother you at this hour, but would you
+                    happen to have a landline phone I could use? I need to call
+                    a tow truck or a taxi or something to get home and my cell 
+                    phone has no reception,\" I asked.\n\n
+                    
+                    \"We've had some problems with the telephone,\" she replied."
+                    usingPhone is mentioned
+                }
+
+                return true
+            }
+
+            ! Asking about the woman or the mansion
+            if xobject = porchlady or xobject = mansion
+            {
+                if porchlady is not mentioned
+                {
+                    "\"I'm very sorry to come knocking at your door so unexpectedly.
+                    This is quite a mansion you have here. Are you the lady of the house?\"\n\n
+
+                    \"I am she,\" she replied briefly."
+                    
+                    porchlady is mentioned
+                }
+                elseif xobject = porchlady
+                {
+                    if( me is mentioned )
+                    {
+                        "\"And you are...?\"\n\n
+\"Excuse me, but how may I help you?\" she snapped."
+                    }
+                    else
+                    {
+                        "\"My name is Lauren. Whom do I have the honour to address?\"\n\n
+                        
+                        She had a puzzled look on her face.
+                        \"Lauren? I don't think we know a Lauren.\""
+                        
+                        me is mentioned
+                    }
+                }
+                else {
+                    "\"You rarely see houses like this,\"\n\n
+                    She looked impatient. \"Our home is not open for tourists, young lady.\"\n\n
+                    \"Oh no, I didn't mean to imply...\" I stuttered."
+                }
+
+                return true
+            }
+
+            return false
+        }
+
+        object DoTell
+        {
+            if scene = GETTING_IN
+            {
+                Perform( &DoAsk, self, xobject )
+                return true
+            }
+
+            if xobject = car or xobject = storm
+            {
+                "\"Sorry to bother you at this hour, but the weather caught me
+                off guard and my car is stuck in your driveway,\" I said.\n"
+
+                if usingphone is mentioned
+                {
+                    let_in
+                }
+                else
+                {
+                    "\"I see,\" she said without changing expression."
+                    
+     				storm is mentioned
+ 				}
+ 				
+                return true
+            }
+
+            if xobject = me
+            {
+                if me is mentioned 
+                {
+                    "\"As I said, my name is Lauren,\" I repeated.\n\n
+                    \"Yes, very good,\" she replied."
+                }
+                else
+                {
+                    "I thought it polite to introduce myself. \"Hi, I'm Lauren.
+                    Pleased to meet you.\"\n\n
+
+                    \"We weren't expecting visitors,\" she just said."
+                    
+                    me is mentioned
+                }
+                return true
+            }
+            return false
+
+        }
+    }
+}
+
+female_character lady "old woman"
+{
+    nouns "woman", "lady"
+    adjectives "old", "older"
+    article "the"
+    parse_rank 2
+    
+    short_desc
+        "The old woman was sitting on a chair, watching me."
+        
+    long_desc
+    {
+        print porchlady.long_desc
+        return true
+    }
+    
+    before
+    {
+        object DoAsk
+        {
+            if clothes is worn 
+            {
+                "\"Please, dear, you're dripping water all over our carpet,\"
+                she said. \"Go upstairs and change and we'll talk.\""
+                
+                return true
+            }
+
+            select xobject
+                case elizabeth
+                {
+                    "\"I'm not Elizabeth. Who's Elizabeth?\"\n"
+                    
+                    "\"Oh Elizabeth, stop fooling around,\" she replied with a 
+                    weak smile."
+                }
+
+                case oldman
+                {
+                    "\"I'm sorry, did you say my \"father\"?\"\n"
+
+                    "\"Don't worry, your father will know what to do,\"
+                    she just said."
+                }
+
+                case usingphone, phone, cellphone
+                {
+                    "\"Can I use the telephone, please?\"\n"
+
+                    "\"Do you want to call your friends, Elizabeth?
+                    Although I think the weather has cut the phone lines.\""
+                }
+
+                case generator
+                {
+                    "\"Do these power outages happen often?\" I asked.\n"
+
+                    "\"Oh, not very often, not at all,\" she said.
+                    \"But it's all right, your father is prepared for everything.\""
+                }
+
+                case else
+                {
+                    return false
+                }
+            
+            return true
+        }
+        
+        object DoTell
+        {
+            if clothes is worn
+            {
+                Perform( &DoAsk, self, xobject )
+                
+                return true
+            }
+            
+            if xobject = me
+            {
+                Perform( &DoAsk, self, elizabeth )
+            }
+            
+            return true
+        }
+    }
+}
+
+object usingPhone "using the phone"
+{
+    nouns "phone", "calling", "telephone"
+    adjectives "using"
+    is known
+}
+
+female_character elizabeth "Elizabeth"
+{
+    nouns "elizabeth", "girl", "daughter"
+}

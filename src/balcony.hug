@@ -1,0 +1,90 @@
+room balcony "Balcony"
+{
+    article "the"
+    noun "balcony"
+
+    long_desc
+    {
+        "The balcony was made of white marble. Rain fell on it from the roof
+        like from a waterfall."
+
+        move london to balcony
+    }
+
+    u_to roof
+
+    in_to
+    {
+        Perform( &DoLookThrough, balconyDoors2 )
+
+        "\nI couldn't bring myself into returning inside the house.
+        I had to stop this madness."
+    }
+
+    after
+    {
+        location
+        {
+            if oldman in study
+            {
+                "\nSoon after closing the balcony doors behind me I heard a
+                bang from inside the mansion."
+                remove oldman
+            }
+
+            return false
+        }
+    }
+}
+
+object ladder "ladder"
+{
+    noun "ladder", "ladders"
+    article "a"
+    is static
+    in balcony
+
+    short_desc
+        "An iron ladder led up to the roof."
+
+    long_desc
+        "The ladder was made of heavy iron. I couldn't understand how the old
+        man could have managed to drag it up to the balcony."
+
+    door_to roof
+
+    before
+    {
+        object DoClimb
+        {
+            Perform( &DoGo, u_obj )
+
+            return true
+        }
+    }
+}
+
+object balconyDoors2 "balcony doors"
+{
+    noun "door", "doors"
+    article "the"
+    is static, hidden
+    in balcony
+
+    long_desc
+        "The doors led back to the study."
+
+    door_to
+    {
+        Perform( &DoGo, in_obj )
+    }
+
+    before
+    {
+        object DoLookThrough
+        {
+            "I looked in through the balcony doors and saw the old man lying
+            on the floor, with a revolver in his hand. He had taken his own life."
+        }
+    }
+}
