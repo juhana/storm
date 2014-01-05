@@ -48,6 +48,186 @@ replace DoOpen
         return true
 }
 
+replace CheckReach(obj)
+{
+        local i,p
+ 
+        if not obj or obj = parent(player)
+                return true
+ 
+#ifclear NO_VERBS
+        if (verbroutine ~= &DoLook, &DoLookIn) and parent(object) and
+                parent(object) ~= player and (parent(object) ~= parent(player))
+        {
+        ! used to check for transparent here, but FindObject should make that not
+        ! necessary
+                if parent(object) is openable, not open
+                {
+                        VMessage(&DoGet, 5)     ! "X is closed."
+                        return false
+                }
+                elseif (parent(object) is transparent, not living, not container) and
+                        (parent(object) ~= parent(player))
+                {
+#ifset _ROODYLIB_H
+                        RLibMessage(&CheckReach,1,obj) ! "The <obj> is inside the <parent>."
+#else
+                        print capital The(obj); " is inside "; The(parent(obj)); "."
+#endif
+                        return false
+                }
+        }
+#endif
+ 
+        if not parent(player).reach or
+           Contains(parent(player), obj)
+                return true
+ 
+        p = obj.part_of
+        while p
+        {
+        if Contains(parent(player), p)
+                return true
+        p = p.part_of
+        }
+ 
+#ifclear NO_VERBS
+        if parent(obj) is living
+        {
+                if verbroutine ~= &DoGet, &DoLook
+ 
+                        ! "Except that X has it..."
+                        Message(&CheckReach, 1, obj)
+ 
+                elseif verbroutine = &DoGet and parent(obj) is unfriendly
+ 
+                        ! "Except that X doesn't want to give it to you..."
+                        Message(&CheckReach, 2, obj)
+        }
+#endif
+ 
+        for (i=1; i<=parent(player).#reach; i++)
+        {
+     if Contains(parent(player).reach #i, obj) or   ! is the object inside a reach object
+          obj = parent(player).reach #i ! is the object a reach object
+                {
+                        return true
+                }
+        }
+ 
+        p = obj.part_of
+        while p
+        {
+        for (i=1; i<=parent(player).#reach; i++)
+        {
+     if Contains(parent(player).reach #i, p) or ! is the object part of an object inside the reach object
+          p = parent(player).reach #i ! is the object part of a reach object
+                {
+                        return true
+                }
+        }
+        p = p.part_of
+        }
+ 
+#ifset USE_ATTACHABLES
+        if parent(player).type = attachable
+        {
+                if InList(parent(player), attached_to, obj)
+                        return true
+        }
+        if obj.type = attachable
+        {
+                if InList(obj, attached_to, parent(player))
+                        return true
+        }
+#endif
+ 
+        ! "You can't reach it..."
+        Message(&CheckReach, 3, obj)
+}
+ 
+replace DoGet
+{
+        local b, p
+ 
+        if object in player
+                VMessage(&DoGet, 1)      ! "You already have that."
+        elseif object = player
+        {
+                VMessage(&DoGet, 2)     ! player trying to get player
+                return false
+        }
+        elseif object is living and object is static
+        {
+                VMessage(&DoGet, 3)     ! player trying to get character
+                return false
+        }
+        elseif parent(object) is living and parent(object) is unfriendly
+                VMessage(&DoGet, 4)      ! "X doesn't want to give it to you."
+        elseif (parent(object) is openable, not open) and
+                parent(object) is container and (parent(object) ~= parent(player)):
+        {
+                VMessage(&DoGet, 5)     ! "X is closed."
+                return false
+        }
+        elseif Contains(object, player)
+        {
+                if object is static
+                        VMessage(&DoGet, 7)     ! "You can't take that."
+                else
+                        VMessage(&DoGet, 6)     ! "Not while you're in/on it..."
+                return false
+        }
+        else
+        {
+                if not CheckReach(object)
+                        return false
+                elseif object is static
+                {
+                        VMessage(&DoGet, 7)      ! "You can't take that."
+                        return true
+                }
+ 
+                ! Because the engine calls location.before
+                if (parent(object)~=location)
+                        b = parent(object).before
+ 
+                if not b
+                {
+                        xobject = parent(object)
+ 
+                        if object not in location
+                        {
+                                CalculateHolding(xobject)
+                                p = xobject
+                        }
+ 
+                        if Acquire(player, object)
+                        {
+                                object is not hidden
+ 
+                                if not object.after
+                                {
+                                        ! Again, to avoid duplication or
+                                        ! echoing:
+                                        !
+                                        b = 0
+                                        if xobject ~= location
+                                                b = xobject.after
+ 
+                                        if b = false
+                                                ! "Taken."
+                                                VMessage(&DoGet, 8)
+                                }
+                        }
+                        else
+                                ! "You're carrying too much to take that."
+                                VMessage(&DoGet, 9)
+                }
+        }
+        return true
+}
+
 
 class unimportant "scenery"
 {
