@@ -17,7 +17,7 @@ module.exports = function( grunt ) {
             },
             prod: {
                 options: {
-                    src: "storm.hex",
+                    src: [ "storm.hex", "walkthrough.txt", "README.md", "LICENSE" ],
                     dest: grunt.option( "dest" ) || "~/www/if/storm/",
                     host: grunt.option( "host" )
                 }
