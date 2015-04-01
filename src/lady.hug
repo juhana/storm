@@ -3,7 +3,7 @@ attribute mentioned
 routine let_in
 {
     "She looked at me from head to toe and seemed to sharpen up. 
-    \"Yes, I suppose we can't leave you there in the rain. 
+    \"Yes, I suppose we can't leave you there in the rain.
     Please do come in.\"\n\nShe took a step back inside the
     mansion and held the door open for me."
 
@@ -42,9 +42,7 @@ female_character porchlady "old woman"
                     to call a tow truck or a taxi so I could get home. My cell 
                     phone has no reception here.\"\n"
                     
-                    print LET_IN
-                    
-                    porch.in_to = livingroom
+                    let_in
                 }
                 elseif usingPhone is mentioned
                 {
@@ -95,7 +93,7 @@ female_character porchlady "old woman"
                     }
                 }
                 else {
-                    "\"You rarely see houses like this,\"\n\n
+                    "\"You rarely see houses like this,\" I remarked.\n\n
                     She looked impatient. \"Our home is not open for tourists, young lady.\"\n\n
                     \"Oh no, I didn't mean to imply...\" I stuttered."
                 }
@@ -169,7 +167,7 @@ female_character lady "old woman"
         
     long_desc
     {
-        print porchlady.long_desc
+        run porchlady.long_desc
         return true
     }
     

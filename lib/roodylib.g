@@ -3,8 +3,16 @@
 !::
 
 #ifset VERSIONS
-#message "roodylib.g Grammar Version 2.3"
+#message "roodylib.g Grammar Version 3.9"
 #endif
+
+#ifclear _ROODYLIB_G
+#set _ROODYLIB_G
+
+#ifclear NO_VERBS
+! just used by CHARACTER, AGAIN
+verb "g" "again"
+	*             DoAgain
 
 !\ Roody's note: Redefined "go" so that the somewhat ingrammatical phrase
 "go off of <object>" can be supported. We'll see if this causes any problems.
@@ -12,7 +20,9 @@ Also, "go to" now directs to DoGo, not DoEnter.   \!
 verb "go", "walk"
 	*							DoGo
 	* "in"/"into"/"inside"/"through" object            DoEnter
-	* "out"/"off"/"to"/"toward"/"towards" object            DoGo
+	* "off" platform										DoExit
+	* "out"/"to"/"toward"/"towards" object            DoGo
+	* "to"/"toward"/"towards" object            DoGo
 	* "out"/"outside"                                       DoExit
 	* object                                                DoGo
 
@@ -28,18 +38,44 @@ verb "look", "l", "examine", "x", "watch"
 	* "beside"/"behind"/"around" object                     DoLookUnder
 	* object                                                DoLook
 
+#ifclear NO_OBJLIB
 verb "push","pull","press","move","roll"
 	* object "to" xobject			DoPushDirTo
+#endif
 
 verb "push","pull","press","move","roll", "shove", "yank", "tug"
 	*			DoVague
+#ifclear NO_OBJLIB
 	* object "to" xobject			DoPushDir
 	* object "north"/ "n"/ "south"/ "s"/ "east"/ "e"/ "west"/ "w"/ \
 	"southeast"/ "se"/ "southwest"/ "sw"/ "northwest"/ "nw"/ \
 	"northeast"/ "ne"/ "up"/ "u"/ "down"/ "d"/ "in"/ "out"/ \
 	"inside"/ "outside"		        DoPushDir
+#endif
 	* "on" object		DoMove
 	* object		 DoMove
+
+! Roody's note: Added to make use of some DoPutIn code where an xobject is not
+! provided.
+verb "put", "place", "set"
+	*                                                       DoVague
+#ifset USE_CHECKHELD
+	* "down" multi                                          DoDrop_CheckHeld
+	* multi "on"/"onto" "ground"/"floor"                    DoPutonGround_CheckHeld
+	* multi "outside" xobject                               DoPutonGround_CheckHeld
+	* multi "down"                                          DoDrop_CheckHeld
+	* multi "in"/"into"/"inside" container                  DoPutIn_CheckHeld
+	* multi "on"/"onto" platform                            DoPutIn_CheckHeld
+	* held                                                  DoPutIn_CheckHeld
+#else
+	* "down" multiheld                                      DoDrop
+	* multiheld "on"/"onto" "ground"/"floor"                DoPutonGround
+	* multiheld "outside" xobject                           DoPutonGround
+	* multiheld "down"                                      DoDrop
+	* multiheld "in"/"into"/"inside" container              DoPutIn
+	* multiheld "on"/"onto" platform                        DoPutIn
+	* held                                                  DoPutIn
+#endif
 
 #ifclear _VERBSTUB_G
 verb "smell", "sniff", "inhale", "breathe"
@@ -52,15 +88,6 @@ verb "search"
 	* "under"/"underneath"/"beneath"/"below" object	DoLookUnder
 	* "in" object                           DoSearch
 	* object                                DoSearch
-#endif
-
-#ifset HUGOFIX
-verb "scope"
-	*                 DoScope
-	* "rooms"         DoScopeRooms
-
-xverb "verbtest"
-	*	object         DoVerbTest
 #endif
 
 ! updated "wear" and "remove" to use new checkheld system
@@ -80,7 +107,21 @@ verb "remove"
 #ifset USE_CHECKHELD
 	* multi                          DoTakeOff_Checkheld
 #else
-	* multi                      DoTakeOff
+	* object                      DoTakeOff
+#endif
+
+verb "take"
+	*                                                       DoVague
+	* "inventory"                                           DoInventory
+#ifset USE_CHECKHELD
+	* "off" multiheld                                       DoTakeOff_Checkheld
+	* multiheld "off"                                       DoTakeOff_Checkheld
+#elseif set AIF
+	* "off" multiheld                                       DoTakeOff
+	* multiheld "off"                                       DoTakeOff
+#else
+	* "off" held                                       DoTakeOff
+	* held "off"                                       DoTakeOff
 #endif
 
 ! Roody's note: Pre-defining "empty" before verblib.g. Alterred to not
@@ -126,6 +167,11 @@ verb "hit", "strike", "break", "attack", "whack", "beat", \
 	* object "with"/"using" held                            DoHit
 	* object                                                DoHit
 
+#ifclear NO_XYZZY
+verb "xyzzy", "plugh"
+	*	               DoXYZZY
+#endif  ! NO_XYZZY
+
 ! Roody's note: I've found that if you support "swim", players will also try
 ! "swim in [object]"
 #ifset _VERBSTUB_G
@@ -136,26 +182,38 @@ verb "swim", "dive"
 verb "wave"
 	*                                       DoWaveHands
 	* "hands"                               DoWaveHands
-	* "to"/"at" object                           DoWaveHands
+	* "to"/"at" object                      DoWaveHands
 	* held                                  DoWave
 #endif
+
+#endif  ! NO_VERBS
+
 !----------------------------------------------------------------------------
 ! NON-ACTION VERBS:
 !----------------------------------------------------------------------------
-#ifclear NO_XYZZY
-xverb "xyzzy", "plugh"
-	*	               DoXYZZY
-#endif
-!\ Roody's note: To get around a bug in Hugo where only the firxst line of
+#ifclear NO_XVERBS
+
+!\ Roody's note: To get around a bug in Hugo where only the first line of
 a multi-line xverb definition is understood to be an xverb, I've split all
 of the multi-line ones into single lines. \!
-
-#ifclear NO_XVERBS
 
 #ifset NO_MODE_CHANGE
 xverb "brief", "normal","superbrief", "short","verbose","long"
 	*                                                 	DoFakeRefuse
 #endif  ! NO_MODE_CHANGE
+
+#ifset CHEAP
+xverb "cheap", "cheapmode"
+	*								DoCheapToggle
+xverb "cheap", "cheapmode"
+	* "help"						DoCheapHelp
+xverb "cheap", "cheapmode"
+	* "on"/"off"				DoCheapOnOff
+xverb "cheap", "cheapmode"
+	* "mode" "on"/"off"		DoCheapOnOff
+xverb "cheap","simple"
+	* "menu"/"menus"		DoCheapOnOff
+#endif ! ifset CHEAP
 
 xverb "restore", "resume"
 	*                                                       DoRestore
@@ -173,12 +231,16 @@ xverb "script", "transcript", "transcription"
 	* "on"/"off"                                            DoScriptOnOff
 
 #ifclear NO_RECORDING
+xverb "playback"
+	*                                                       DoRecordOnOff
+xverb "playback"
+	*  "on"/"off"                                           DoRecordOnOff
 xverb "record"
 	*                                                       DoRecordOnOff
 xverb "record"
 	* "on"/"off"                                            DoRecordOnOff
 
-#endif
+#endif  ! NO_RECORDING
 
 xverb "quit", "q"
 	*                                                       DoQuit
@@ -198,11 +260,64 @@ xverb "display"
 xverb "wide", "tall"
 	*                                                       DoDisplay
 
+#ifclear NO_VERSION
+#if defined GAME_TITLE
+xverb "version"
+	*                                                       DoVersion
+#endif ! if defined GAME_TITLE
+#endif ! ifclear NO_VERSION
 #endif  ! ifclear NO_XVERBS
 
+#ifset USE_FOOTNOTES
+verb "footnote","note","fn","f"
+*							DoFootnote
+*	number				DoFootnote
+
+xverb "help"
+	* "footnotes"						DoFootnoteMode
+
+xverb "footnotes", "notes"
+	*										DoFootnoteMode
+	* "help"                      DoFootnoteMode
+	* "always"							DoFootnoteMode
+	* "on"/"normal"					DoFootnoteMode
+	* "off"/"never"					DoFootnoteMode
+#endif ! ifset USE_FOOTNOTES
+
+#ifset SCORE_NOTIFY
+xverb "notify"
+	*        DoScoreNotifyOnOff
+xverb "score"
+* "notify"/"notification"			DoScoreNotifyOnOff
+
+xverb "score", "notify"
+* "on"				DoScoreNotifyOn
+xverb "score"
+* "notify"/"notification" "on" DoScoreNotifyOn
+
+xverb "score", "notify"
+* "off"				DoScoreNotifyOff
+xverb "score"
+* "notify"/"notification" "off" DoScoreNotifyOff
+#endif ! ifset SCORE_NOTIFY
+
+! We'll allow HugoFix commands to work even in NO_XVERBS games as it is
+! assumed they'll only be used for betatesting.
+
 #ifset HUGOFIX
-#ifclear _HUGOFIX_G
-#set _HUGOFIX_G
+
+!#ifclear _HUGOFIX_G
+!#set _HUGOFIX_G
+!#endif	! _HUGOFIX_G
+
+xverb "scope"
+	*                 DoScope
+
+xverb "scope"
+	* "rooms"         DoScopeRooms
+
+xverb "verbtest"
+	*	object         DoVerbTest
 
 xverb "$", "$ca", "$fd", "$on", "$pm", "$pr", "$sc"
 	*                                       DoHugoFix
@@ -335,6 +450,6 @@ xverb "$wn"
 
 xverb "$wo"
 	* number                                DoHugoFix
-
-#endif	! _HUGOFIX_G
 #endif   ! ifset HUGOFIX
+
+#endif ! _ROODYLIB_G

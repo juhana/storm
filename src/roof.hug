@@ -2,7 +2,7 @@ room roof "Roof"
 {
     long_desc
     {
-        if devourer is known
+        if devourer is known and word[1] and not (word[1] = "u","undo")
         {
             Perform( &DoLook, devourer )
         }

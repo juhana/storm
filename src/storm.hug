@@ -1,5 +1,5 @@
-constant RELEASE_NUMBER 1
-constant RELEASE_DATE "2014-01-05"
+constant RELEASE_NUMBER 2
+constant RELEASE_DATE "2015-04-02"
 constant IFID "B7142FD1-4BE4-4BE8-A3BF-E854D90F3540"
 
 ! Uncomment the following to include verb stub routines:
@@ -60,11 +60,13 @@ routine full_banner
 routine init
 {
     pasttense = true
-    player_person = 1
+    MakePlayer(me, 1)
     prompt = ">"
     counter = -1
     verbosity = 2
     
+    DEFAULT_FONT = PROP_ON
+    Font(DEFAULT_FONT)
     STATUSTYPE = 0
 
     cls

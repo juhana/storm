@@ -1,0 +1,21 @@
+Release 2 (2015-04-02)
+----------------------
+
+The bugfixes in this release were provided by Jonathan Blask except where noted (*).
+
+- Fixed the bug where the game would crash if the player did undo after the game had ended.
+- Set the protagonist's pronouns correctly so that she isn't referred to as "you" in some default messages.
+- Fixed the font declaration so that it stays constant in non-Gargoyle interpreters.
+- The NPCs' pronouns are now correctly assigned when they are first encountered.
+- Fixed a bug where trying to open or enter the car while inside it would show an empty response (*).
+- Completed an incomplete sentence when asking the old woman twice about the mansion (*).
+- Removed extra line breaks from a couple of places.
+- Miscellaneous changes to story text (*).
+- Updated the Roodylib library which, among other things, fixes some awkward default messages.
+
+
+
+Release 1 (2014-01-05)
+----------------------
+
+Initial release.

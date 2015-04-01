@@ -30,11 +30,11 @@ room study "Study"
                 "\"It's you,\" he said as he noticed me. \"Now who did you say you were
                 again? You must excuse me, I'm very busy with the experiment.'\"\n"
 
-                "(I could ask him about the woman, Elizabeth, or the experiment; 
+                "(I could ask him about Elizabeth, the old woman, or the experiment;
                 or tell him about the generator, myself, or the storm.)"
 
                 move oldman to study
-                AssignPronoun( oldman )
+                AssignPronoun( oldman, true )
                 return false
             }
         }

@@ -98,6 +98,16 @@ object car "car"
             {
                 "There was no point in going back to the car."
             }
+            elseif verbroutine = &DoOpen
+            {
+                "\i(Command EXIT or OUT to leave the car.)\i"
+            }
+            else
+            {
+                "I was already in the car."
+            }
+
+            return true
         }
     }
 }
@@ -184,7 +194,7 @@ object frontdoor "front door"
                 self is open
                 move porchlady to porch
                 usingPhone is known
-                AssignPronoun( porchlady )
+                AssignPronoun( porchlady, true )
             }
 
             return true
